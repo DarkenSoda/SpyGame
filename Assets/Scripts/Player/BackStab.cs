@@ -19,12 +19,14 @@ public class BackStab : MonoBehaviour {
 
     private void OnBackStabPerformed(object sender, EventArgs e) {
         if (currentEnemy == null) return;
-        if(GetComponent<PlayerAnimations>().isAttacking) return;
+        if (GetComponent<PlayerAnimations>().isAttacking) return;
 
         // Perform Kill
+
         currentEnemy.transform.rotation = transform.rotation;
         currentEnemy.transform.position = killPosition.position;
         GetComponent<PlayerAnimations>().Attack();
+        currentEnemy.GetComponent<Enemy>().Die();
         // Alert Nearby Enemies
     }
 

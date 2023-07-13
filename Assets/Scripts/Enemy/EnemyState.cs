@@ -1,5 +1,6 @@
 public enum EnemyState {
-    Alive,
+    Patrolling,
+    Alerted,
     Aggressive,
     Dead
 }
