@@ -1,8 +1,12 @@
+using System.Collections;
 using System;
 using UnityEngine;
 
 public class BackStab : MonoBehaviour {
     public GameObject currentEnemy { get; private set; }
+
+    [Header("Transfer enemy to Kill Position")]
+    [SerializeField] private float duration = .1f;
     [SerializeField] private Transform killPosition;
 
 
@@ -22,12 +26,24 @@ public class BackStab : MonoBehaviour {
         if (GetComponent<PlayerAnimations>().isAttacking) return;
 
         // Perform Kill
-
-        currentEnemy.transform.rotation = transform.rotation;
-        currentEnemy.transform.position = killPosition.position;
+        StartCoroutine(LerpPositionRotation(currentEnemy.transform));
         GetComponent<PlayerAnimations>().Attack();
         currentEnemy.GetComponent<Enemy>().Die();
         // Alert Nearby Enemies
+    }
+
+    private IEnumerator LerpPositionRotation(Transform currentEnemy) {
+        float timeElapsed = 0;
+        Vector3 startPosition = currentEnemy.position;
+        Quaternion startRotation = currentEnemy.rotation;
+        while (timeElapsed < duration) {
+            timeElapsed += Time.deltaTime;
+            currentEnemy.position = Vector3.Lerp(startPosition, killPosition.position, timeElapsed / duration);
+            currentEnemy.rotation = Quaternion.Slerp(startRotation, transform.rotation, timeElapsed / duration);
+            yield return null;
+        }
+        currentEnemy.position = killPosition.position;
+        currentEnemy.rotation = transform.rotation;
     }
 
     public void SetCurrentEnemy(GameObject enemy) {

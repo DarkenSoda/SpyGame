@@ -22,4 +22,8 @@ public class EnemyAnimations : MonoBehaviour {
         int i = UnityEngine.Random.Range(0, deathAnimations.Length);
         anim.SetTrigger(deathAnimations[i]);
     }
+
+    public void CheckPointAnimation() {
+        
+    }
 }

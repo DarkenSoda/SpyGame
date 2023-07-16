@@ -1,3 +1,4 @@
+using System.Net;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,19 +9,30 @@ public class Enemy : MonoBehaviour {
     private NavMeshAgent agent;
     public EnemyState enemyState { get; private set; }
 
+    public float normalSpeed = 2f;
+    public float alertedSpeed = 4f;
+    public float aggressiveSpeed = 6f;
+
     private float waitCooldown = 0f;
     [SerializeField] private float waitCooldownMax;
     [SerializeField] private float stopDistance = 0.8f;
 
     [Header("WayPoints")]
-    public Transform[] pointList;
+    public Transform pathHolder;
+    private Transform[] pointList;
     private int currentPointIndex = 0;
     private bool isGoingBackwards = false;
+
+    private Vector3 alertPosition;
     public bool IsWalking { get; private set; }
 
 
     private void Start() {
         agent = GetComponent<NavMeshAgent>();
+        pointList = new Transform[pathHolder.childCount];
+        for (int i = 0; i < pathHolder.childCount; i++) {
+            pointList[i] = pathHolder.GetChild(i).transform;
+        }
         enemyState = EnemyState.Patrolling;
         waitCooldown = waitCooldownMax;
     }
@@ -33,6 +45,7 @@ public class Enemy : MonoBehaviour {
                 Patrol();
                 break;
             case EnemyState.Alerted:
+                CheckPoint(alertPosition);
                 break;
             case EnemyState.Aggressive:
                 break;
@@ -50,9 +63,9 @@ public class Enemy : MonoBehaviour {
     private void Patrol() {
         if (waitCooldown < waitCooldownMax) return;
 
-        MoveToPoint(pointList[currentPointIndex]);
+        MoveToPoint(pointList[currentPointIndex].position);
 
-        if (!PointReached(pointList[currentPointIndex])) return;
+        if (!PointReached(pointList[currentPointIndex].position)) return;
 
         IsWalking = false;
         waitCooldown = 0f;
@@ -72,17 +85,39 @@ public class Enemy : MonoBehaviour {
         }
     }
 
-    private bool PointReached(Transform point) {
-        float distance = Vector3.Distance(transform.position, point.position);
+    private bool PointReached(Vector3 position) {
+        float distance = Vector3.Distance(transform.position, position);
         if (distance <= stopDistance)
             return true;
 
         return false;
     }
 
-    private void MoveToPoint(Transform point) {
+    private void MoveToPoint(Vector3 position) {
         IsWalking = true;
-        agent.SetDestination(point.position);
+        agent.SetDestination(position);
+    }
+
+    public void Alert(Vector3 position) {
+        SetEnemyState(EnemyState.Alerted);
+        alertPosition = position;
+        MoveToPoint(position);
+    }
+
+    private void CheckPoint(Vector3 position) {
+        if (PointReached(position)) {
+            IsWalking = false;
+            StartCoroutine(WaitAtPoint());
+        }
+    }
+
+    private IEnumerator WaitAtPoint() {
+        GetComponent<EnemyAnimations>().CheckPointAnimation();
+        yield return new WaitForSecondsRealtime(waitCooldownMax);
+
+        if (enemyState == EnemyState.Alerted) {
+            SetEnemyState(EnemyState.Patrolling);
+        }
     }
 
     public void Die() {
@@ -93,5 +128,20 @@ public class Enemy : MonoBehaviour {
 
     public void SetEnemyState(EnemyState state) {
         enemyState = state;
+    }
+
+    public void SetSpeed(float speed) {
+        agent.speed = speed;
+    }
+
+    private void OnDrawGizmos() {
+        Vector3 startPosition = pathHolder.GetChild(0).position;
+        Vector3 previousPosition = startPosition;
+
+        foreach (Transform waypoint in pathHolder) {
+            Gizmos.DrawSphere(waypoint.position, .3f);
+            Gizmos.DrawLine(previousPosition, waypoint.position);
+            previousPosition = waypoint.position;
+        }
     }
 }
