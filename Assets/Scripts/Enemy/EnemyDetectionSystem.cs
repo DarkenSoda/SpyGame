@@ -28,11 +28,13 @@ public class EnemyDetectionSystem : MonoBehaviour {
     }
 
     private void CheckAlert(float range) {
-        if (Physics.SphereCast(transform.position, range, Vector3.zero, out RaycastHit hit)) {
-            PlayerMovement player = hit.transform.gameObject.GetComponent<PlayerMovement>();
-            if (player == null) return;
+        if (!PlayerMovement.Instance.IsWalking) return;
 
-            enemy.Alert(player.transform.position);
+        Vector3 playerPosition = PlayerMovement.Instance.transform.position;
+        float distanceFromPlayer = Vector3.Distance(transform.position, playerPosition);
+
+        if (distanceFromPlayer <= range) {
+            enemy.Alert(playerPosition);
         }
     }
 }

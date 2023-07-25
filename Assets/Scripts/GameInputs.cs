@@ -13,11 +13,15 @@ public class GameInputs : MonoBehaviour {
     public event EventHandler OnInvisibilityPerformed;
     public event EventHandler OnViewMap;
 
-    public static GameInputs Instance;
+    public static GameInputs Instance { get; private set; }
     private PlayerInputs playerInputs;
 
     private void Awake() {
-        Instance = this;
+        if (Instance != null && Instance != this) {
+            Destroy(this);
+        } else {
+            Instance = this;
+        }
         playerInputs = new PlayerInputs();
     }
 

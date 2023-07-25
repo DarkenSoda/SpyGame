@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour {
+    public static PlayerMovement Instance { get; private set; }
+
     private PlayerState playerState;
 
     private CharacterController controller;
@@ -23,15 +25,22 @@ public class PlayerMovement : MonoBehaviour {
     [SerializeField] private Transform feet;
     [SerializeField] private Transform body;
 
-    [Header("Layers and Inputs")]
+    [Header("Layers")]
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private GameInputs gameInputs;
 
     private bool isWalking = false;
     private bool isGrounded;
     private bool isSliding;
     private Vector3 slidingDirection;
     private RaycastHit hitInfo;
+
+    private void Awake() {
+        if (Instance != null && Instance != this) {
+            Destroy(this);
+        } else {
+            Instance = this;
+        }
+    }
 
     private void Start() {
         controller = GetComponent<CharacterController>();
@@ -62,7 +71,7 @@ public class PlayerMovement : MonoBehaviour {
     private void HandleMovement() {
         if (GetComponent<PlayerAnimations>().isAttacking) return;
 
-        Vector2 inputVector = gameInputs.GetMovementVectorNormalized();
+        Vector2 inputVector = GameInputs.Instance.GetMovementVectorNormalized();
 
         float moveDistance = currentSpeed * Time.deltaTime;
         if (inputVector != Vector2.zero) {

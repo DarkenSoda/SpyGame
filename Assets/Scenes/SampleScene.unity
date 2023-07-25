@@ -843,7 +843,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b208045f8193b664c87f584eb720b833, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameInputs: {fileID: 145960818}
 --- !u!114 &953562370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -867,7 +866,6 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  gameInputs: {fileID: 145960818}
 --- !u!143 &953562371
 CharacterController:
   m_ObjectHideFlags: 0
@@ -908,7 +906,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   duration: 0.2
   killPosition: {fileID: 948152426}
-  gameInputs: {fileID: 145960818}
 --- !u!114 &953562373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1379,7 +1376,7 @@ MonoBehaviour:
   alertedSpeed: 4
   aggressiveSpeed: 6
   waitCooldownMax: 5
-  stopDistance: 0.2
+  stopDistance: 0.1
   pathHolder: {fileID: 223517051}
 --- !u!195 &1563256623
 NavMeshAgent:
@@ -1432,8 +1429,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   detectionRange: 0
   detectionRadius: 0
-  walkingAlertRange: 10
-  runningAlertRange: 20
+  walkingAlertRange: 5
+  runningAlertRange: 10
   deathAlertRange: 0
 --- !u!1001 &1619713326
 PrefabInstance:

@@ -86,7 +86,9 @@ public class Enemy : MonoBehaviour {
     }
 
     private bool PointReached(Vector3 position) {
-        float distance = Vector3.Distance(transform.position, position);
+        Vector3 enemyPosition = new Vector3(transform.position.x, 0, transform.position.z);
+        position.y = 0;
+        float distance = Vector3.Distance(enemyPosition, position);
         if (distance <= stopDistance)
             return true;
 
@@ -107,13 +109,17 @@ public class Enemy : MonoBehaviour {
     private void CheckPoint(Vector3 position) {
         if (PointReached(position)) {
             IsWalking = false;
-            StartCoroutine(WaitAtPoint());
+            WaitAtPoint();
+        } else {
+            waitCooldown = 0f;
         }
     }
 
-    private IEnumerator WaitAtPoint() {
-        GetComponent<EnemyAnimations>().CheckPointAnimation();
-        yield return new WaitForSecondsRealtime(waitCooldownMax);
+    private void WaitAtPoint() {
+        if (waitCooldown < waitCooldownMax) {
+            GetComponent<EnemyAnimations>().CheckPointAnimation();
+            return;
+        }
 
         if (enemyState == EnemyState.Alerted) {
             SetEnemyState(EnemyState.Patrolling);

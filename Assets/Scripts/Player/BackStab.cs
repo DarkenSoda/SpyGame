@@ -10,15 +10,13 @@ public class BackStab : MonoBehaviour {
     [SerializeField] private Transform killPosition;
 
 
-    [Header("Game Inputs")]
-    [SerializeField] private GameInputs gameInputs;
 
     private void Start() {
-        gameInputs.OnBackStabPerformed += OnBackStabPerformed;
+        GameInputs.Instance.OnBackStabPerformed += OnBackStabPerformed;
     }
 
     private void OnDestroy() {
-        gameInputs.OnBackStabPerformed -= OnBackStabPerformed;
+        GameInputs.Instance.OnBackStabPerformed -= OnBackStabPerformed;
     }
 
     private void OnBackStabPerformed(object sender, EventArgs e) {
