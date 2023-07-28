@@ -1,12 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour {
-    public static PlayerMovement Instance { get; private set; }
-
-    private PlayerState playerState;
-
+public class Player : MonoBehaviour {
+    public static Player Instance { get; private set; }
     private CharacterController controller;
 
     [Header("Movement")]
@@ -44,6 +40,15 @@ public class PlayerMovement : MonoBehaviour {
 
     private void Start() {
         controller = GetComponent<CharacterController>();
+        playerState = PlayerState.Walking;
+
+        GameInputs.Instance.OnCrouchPerformed += OnToggleCrouch;
+        GameInputs.Instance.OnRunPerformed += OnToggleRunning;
+    }
+
+    private void OnDestroy() {
+        GameInputs.Instance.OnCrouchPerformed -= OnToggleCrouch;
+        GameInputs.Instance.OnRunPerformed -= OnToggleRunning;
     }
 
     private void Update() {
@@ -51,7 +56,6 @@ public class PlayerMovement : MonoBehaviour {
         HandleGravity();
         HandleSlopeSliding();
 
-        playerState = GetComponent<PlayerStateManager>().playerState;
         if (playerState == PlayerState.Walking) {
             currentSpeed = moveSpeed;
         }
@@ -136,6 +140,17 @@ public class PlayerMovement : MonoBehaviour {
         currentSpeed = speed;
     }
 
+    private void OnToggleRunning(object sender, EventArgs e) {
+        playerState = playerState == PlayerState.Running ? PlayerState.Walking : PlayerState.Running;
+    }
+
+    private void OnToggleCrouch(object sender, EventArgs e) {
+        if (playerState == PlayerState.CarryingEnemy) return;
+
+        playerState = playerState == PlayerState.Crouching ? PlayerState.Walking : PlayerState.Crouching;
+    }
+
+    public PlayerState playerState { get; private set; }
     public bool IsWalking { get { return isWalking; } }
     public bool IsGrounded { get { return isGrounded; } }
     public bool IsSliding { get { return isSliding; } }

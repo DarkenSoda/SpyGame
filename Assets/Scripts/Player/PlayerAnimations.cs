@@ -27,9 +27,9 @@ public class PlayerAnimations : MonoBehaviour {
     }
 
     private void Update() {
-        playerState = GetComponent<PlayerStateManager>().playerState;
+        playerState = Player.Instance.playerState;
 
-        isMoving = GetComponent<PlayerMovement>().IsWalking;
+        isMoving = GetComponent<Player>().IsWalking;
         isCrouching = playerState == PlayerState.Crouching;
         isRunning = playerState == PlayerState.Running;
 

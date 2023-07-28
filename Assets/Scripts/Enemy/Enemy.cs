@@ -1,6 +1,3 @@
-using System.Net;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -130,6 +127,7 @@ public class Enemy : MonoBehaviour {
         SetEnemyState(EnemyState.Dead);
         GetComponent<EnemyAnimations>().DeathAnimation();
         GetComponentInChildren<StabRangeDetection>().gameObject.SetActive(false);
+        GetComponent<EnemyDetectionSystem>().meshFilter.gameObject.SetActive(false);
     }
 
     public void SetEnemyState(EnemyState state) {
