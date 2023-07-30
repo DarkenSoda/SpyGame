@@ -9,11 +9,11 @@ public class EnemyAnimations : MonoBehaviour {
     public string[] deathAnimations;
 
     private void Start() {
-        anim = GetComponentInChildren<Animator>();
+        anim = GetComponent<Animator>();
     }
 
     private void Update() {
-        isWalking = GetComponent<Enemy>().IsWalking;
+        isWalking = GetComponentInParent<Enemy>().IsWalking;
 
         anim.SetBool("IsWalking", isWalking);
     }
@@ -25,5 +25,14 @@ public class EnemyAnimations : MonoBehaviour {
 
     public void CheckPointAnimation() {
         
+    }
+
+    public void AlertAnimation() {
+        anim.SetBool("Alert", true);
+    }
+
+    public void EndAlert() {
+        anim.SetBool("Alert", false);
+        GetComponentInParent<Enemy>().MoveToAlertPosition();
     }
 }

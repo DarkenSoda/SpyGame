@@ -4,6 +4,7 @@ using UnityEngine;
 public class Player : MonoBehaviour {
     public static Player Instance { get; private set; }
     private CharacterController controller;
+    private PlayerAnimations animator;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed;
@@ -40,6 +41,7 @@ public class Player : MonoBehaviour {
 
     private void Start() {
         controller = GetComponent<CharacterController>();
+        animator = GetComponentInChildren<PlayerAnimations>();
         playerState = PlayerState.Walking;
 
         GameInputs.Instance.OnCrouchPerformed += OnToggleCrouch;
@@ -73,7 +75,7 @@ public class Player : MonoBehaviour {
     }
 
     private void HandleMovement() {
-        if (GetComponent<PlayerAnimations>().isAttacking) return;
+        if (animator.IsAttacking) return;
 
         Vector2 inputVector = GameInputs.Instance.GetMovementVectorNormalized();
 

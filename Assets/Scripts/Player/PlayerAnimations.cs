@@ -18,18 +18,18 @@ public class PlayerAnimations : MonoBehaviour {
     private bool isMoving = false;
     private bool isRunning = false;
     private bool isCrouching = false;
-    public bool isAttacking { get; private set; } = false;
+    public bool IsAttacking { get; private set; } = false;
 
     private Animator anim;
 
     private void Start() {
-        anim = GetComponentInChildren<Animator>();
+        anim = GetComponent<Animator>();
     }
 
     private void Update() {
         playerState = Player.Instance.playerState;
 
-        isMoving = GetComponent<Player>().IsWalking;
+        isMoving = Player.Instance.IsWalking;
         isCrouching = playerState == PlayerState.Crouching;
         isRunning = playerState == PlayerState.Running;
 
@@ -39,14 +39,14 @@ public class PlayerAnimations : MonoBehaviour {
     }
 
     public void Attack() {
-        if (isAttacking) return;
+        if (IsAttacking) return;
 
-        isAttacking = true;
+        IsAttacking = true;
         anim.SetTrigger("IsAttacking");
     }
 
     public void EndAttack() {
-        isAttacking = false;
+        IsAttacking = false;
     }
 
     // private void Update() {

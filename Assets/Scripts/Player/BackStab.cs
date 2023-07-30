@@ -21,11 +21,11 @@ public class BackStab : MonoBehaviour {
 
     private void OnBackStabPerformed(object sender, EventArgs e) {
         if (currentEnemy == null) return;
-        if (GetComponent<PlayerAnimations>().isAttacking) return;
+        if (GetComponentInChildren<PlayerAnimations>().IsAttacking) return;
 
         // Perform Kill
         StartCoroutine(LerpPositionRotation(currentEnemy.transform));
-        GetComponent<PlayerAnimations>().Attack();
+        GetComponentInChildren<PlayerAnimations>().Attack();
         currentEnemy.GetComponent<Enemy>().Die();
         // Alert Nearby Enemies
     }

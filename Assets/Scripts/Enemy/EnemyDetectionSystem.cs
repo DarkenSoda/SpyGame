@@ -40,7 +40,7 @@ public class EnemyDetectionSystem : MonoBehaviour {
 
     }
 
-    private void FixedUpdate() {
+    private void Update() {
         if (enemy.enemyState == EnemyState.Dead) return;
 
         CheckAlert(walkingAlertRange, PlayerState.Walking);
