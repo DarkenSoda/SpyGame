@@ -51,6 +51,9 @@ public class Enemy : MonoBehaviour {
                 Patrol();
                 break;
             case EnemyState.Alerted:
+                break;
+            case EnemyState.CheckAlert:
+                MoveToAlertPosition();
                 CheckPoint(lastAlertPosition);
                 break;
             case EnemyState.Aggressive:
@@ -61,8 +64,6 @@ public class Enemy : MonoBehaviour {
         }
         IsWalking = agent.velocity != Vector3.zero;
     }
-
-
 
     private void Patrol() {
         if (waitCooldown < waitCooldownMax) return;
@@ -104,7 +105,7 @@ public class Enemy : MonoBehaviour {
     public void Alert(Vector3 position) {
         if (alertCooldown < alertCooldownMax) return;
 
-        if (enemyState != EnemyState.Alerted) {
+        if (enemyState != EnemyState.Alerted && enemyState != EnemyState.CheckAlert) {
             agent.ResetPath();
             SetEnemyState(EnemyState.Alerted);
             // play Alert Animation
@@ -133,7 +134,7 @@ public class Enemy : MonoBehaviour {
             return;
         }
 
-        if (enemyState == EnemyState.Alerted) {
+        if (enemyState == EnemyState.Alerted || enemyState == EnemyState.CheckAlert) {
             SetEnemyState(EnemyState.Patrolling);
             alertCooldown = 0f;
         }

@@ -33,6 +33,6 @@ public class EnemyAnimations : MonoBehaviour {
 
     public void EndAlert() {
         anim.SetBool("Alert", false);
-        GetComponentInParent<Enemy>().MoveToAlertPosition();
+        GetComponentInParent<Enemy>().SetEnemyState(EnemyState.CheckAlert);
     }
 }

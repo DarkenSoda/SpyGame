@@ -936,9 +936,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d690010c9c6264546beb3efa5ce5a613, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
-  crouchSpeed: 3
-  runningSpeed: 7
+  moveSpeed: 3.5
+  crouchSpeed: 2.5
+  runningSpeed: 5
   slidingSpeed: 10
   gravityMultiplier: 0.1
   checkSphereRadius: 0.51
@@ -1595,12 +1595,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6a3918d3417f6d43a9d49659560b22f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectionRadius: 7
-  detectionAngle: 75
+  detectionRadius: 10
+  detectionAngle: 90
   meshResolution: 0.85
   edgeResolveIterations: 8
   edgeDistanceThreshold: 0.5
-  walkingAlertRange: 5
+  walkingAlertRange: 8
   runningAlertRange: 10
   deathAlertRange: 0
   enemyLayer:
