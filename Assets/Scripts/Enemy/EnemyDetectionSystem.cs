@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,28 +25,51 @@ public class EnemyDetectionSystem : MonoBehaviour {
 
     [Header("Layers")]
     [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private LayerMask playerLayer;
     [SerializeField] private LayerMask notObstructionLayers;
-
-    private Enemy enemy;
 
     [Header("Mesh")]
     public MeshFilter meshFilter;
     private Mesh mesh;
 
+    private Enemy enemy;
+    private AlertMeter alert;
+    private List<Enemy> deadEnemyList = new List<Enemy>();
+    public bool CanSeePlayer { get; private set; }
+    public bool CanSeeDeadEnemy { get; private set; }
+    public bool IsAlerted { get; private set; }
+
     private void Start() {
         enemy = GetComponent<Enemy>();
+        alert = GetComponent<AlertMeter>();
         mesh = new Mesh();
         mesh.name = "Cone Mesh";
         meshFilter.mesh = mesh;
 
+        Enemy.OnEnemyDeath += Enemy_OnDeath;
+    }
+
+    private void OnDisable() {
+        Enemy.OnEnemyDeath -= Enemy_OnDeath;
     }
 
     private void Update() {
-        if (enemy.enemyState == EnemyState.Dead) return;
+        if (enemy.enemyState == EnemyState.Dead) {
+            this.enabled = false;
+            return;
+        }
 
         CheckAlert(walkingAlertRange, PlayerState.Walking);
         CheckAlert(runningAlertRange, PlayerState.Running);
-        ConeVision();
+        CanSeePlayer = ConeVision(Player.Instance.transform, enemyLayer);
+
+        foreach (Enemy deadEnemy in deadEnemyList) {
+            CanSeeDeadEnemy = ConeVision(deadEnemy.transform, playerLayer);
+            if(CanSeeDeadEnemy) {
+                Debug.Log(deadEnemy.transform.position);
+                break;
+            }
+        }
     }
 
     private void LateUpdate() {
@@ -53,38 +77,49 @@ public class EnemyDetectionSystem : MonoBehaviour {
     }
 
     private void CheckAlert(float range, PlayerState state) {
-        if (!Player.Instance.IsWalking) return;
-        if (Player.Instance.playerState != state) return;
+        if (!Player.Instance.IsWalking || Player.Instance.playerState != state) {
+            IsAlerted = false;
+            return;
+        }
 
         Vector3 playerPosition = Player.Instance.transform.position;
         float distanceFromPlayer = Vector3.Distance(transform.position, playerPosition);
 
         if (distanceFromPlayer <= range) {
+            IsAlerted = true;
             enemy.Alert(playerPosition);
-        }
+            alert.IncreaseMeter(distanceFromPlayer);
+        } else { IsAlerted = false; }
     }
 
-    private void ConeVision() {
-        Vector3 playerPosition = Player.Instance.transform.position;
-        float distanceFromPlayer = Vector3.Distance(transform.position, playerPosition);
+    private bool ConeVision(Transform target, LayerMask layer) {
+        Vector3 targetPosition = target.position;
+        float distanceFromPlayer = Vector3.Distance(transform.position, targetPosition);
 
         if (distanceFromPlayer <= detectionRadius) {
-            Vector3 direction = (playerPosition - transform.position).normalized;
+            Vector3 direction = (targetPosition - transform.position).normalized;
 
             // if Outside ConeVision Angle
-            if (Vector3.Angle(transform.forward, direction) > detectionAngle / 2) return;
+            if (Vector3.Angle(transform.forward, direction) > detectionAngle / 2) {
+                return false;
+            }
 
             // Check if player is not Hidden
-            if (Physics.Raycast(transform.position, direction, out RaycastHit hit, detectionRadius, ~enemyLayer)) {
-                if (hit.transform.GetComponent<Player>() == null) {
-                    Debug.Log("Not Hit");
-                    return;
+            if (Physics.Raycast(transform.position, direction, out RaycastHit hit, detectionRadius, ~layer)) {
+                if (hit.transform.gameObject != target.gameObject) {
+                    return false;
                 }
 
                 // Kill Player
-                Debug.Log("Game Over");
+                return true;
             }
         }
+
+        return false;
+    }
+
+    private void Enemy_OnDeath(object sender, EventArgs e) {
+        deadEnemyList.Add(sender as Enemy);
     }
 
     private void DrawConeVision() {

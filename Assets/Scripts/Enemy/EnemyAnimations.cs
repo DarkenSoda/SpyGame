@@ -4,16 +4,18 @@ using UnityEngine;
 
 public class EnemyAnimations : MonoBehaviour {
     private Animator anim;
+    private Enemy enemy;
 
     private bool isWalking;
     public string[] deathAnimations;
 
     private void Start() {
         anim = GetComponent<Animator>();
+        enemy = GetComponentInParent<Enemy>();
     }
 
     private void Update() {
-        isWalking = GetComponentInParent<Enemy>().IsWalking;
+        isWalking = enemy.IsWalking;
 
         anim.SetBool("IsWalking", isWalking);
     }
@@ -29,10 +31,11 @@ public class EnemyAnimations : MonoBehaviour {
 
     public void AlertAnimation() {
         anim.SetBool("Alert", true);
+        enemy.CanRotate = false;
     }
 
     public void EndAlert() {
         anim.SetBool("Alert", false);
-        GetComponentInParent<Enemy>().SetEnemyState(EnemyState.CheckAlert);
+        enemy.CanRotate = true;
     }
 }
